@@ -1,0 +1,25 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name:  do-dns-update
+spec:
+  schedule: "*/5 * * * *" # Run every 5 min
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: dns
+            image: gregsidelinger/do-dynamic-dns
+            imagePullPolicy: Always
+            env:
+            - name: DOMAIN
+              value: example.com
+            - name: RECORD
+              value: dynamic
+            - name: DIGITALOCEAN_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: digitalocean
+                  key: token
+          restartPolicy: Never
